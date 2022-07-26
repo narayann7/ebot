@@ -1,7 +1,7 @@
+import 'package:ebot/controller/practice_cupid.dart';
+import 'package:ebot/model/pratice_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-
-import '../utility/constants.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PracticeSpeaking extends StatefulWidget {
   const PracticeSpeaking({Key? key}) : super(key: key);
@@ -20,42 +20,72 @@ class PracticeSpeaking extends StatefulWidget {
 }
 
 class _PracticeSpeakingState extends State<PracticeSpeaking> {
-  late FlutterTts flutterTts;
-  TtsState ttsState = TtsState.stopped;
-  // final String _newVoiceText = "hello world";
-
   @override
   initState() {
     super.initState();
+    context.read<PracticeCupid>().startPractice();
   }
 
   @override
   void dispose() {
     super.dispose();
+    context.read<PracticeCupid>().stopPractice();
   }
+
+  String text = 'Press the button and start speaking';
+  bool isListening = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Practice Speaking'),
-        ),
-        body: Column(
-          children: [
-            Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height * 0.65,
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(color: Colors.amber[100]),
+    return BlocConsumer<PracticeCupid, PraticeState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        return Scaffold(
+            appBar: AppBar(
+              title: const Text('Practice Speaking'),
             ),
-            Container(
-              alignment: Alignment.center,
-              height: MediaQuery.of(context).size.height * 0.25,
-              width: MediaQuery.of(context).size.width,
-              decoration: const BoxDecoration(color: Colors.white),
-            )
-          ],
-        ));
+            body: Column(
+              children: [
+                Container(
+                    alignment: Alignment.center,
+                    height: MediaQuery.of(context).size.height * 0.65,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(color: Colors.amber[100]),
+                    child: Column(
+                      children: [
+                        Text(
+                          "temp : ${state.currentUserTempText}",
+                          style: const TextStyle(fontSize: 30),
+                        ),
+                        Text(
+                          "user message : ${state.currentUserText}",
+                          style: const TextStyle(fontSize: 30),
+                        ),
+                      ],
+                    )),
+                Container(
+                  alignment: Alignment.center,
+                  height: MediaQuery.of(context).size.height * 0.25,
+                  width: MediaQuery.of(context).size.width,
+                  decoration: const BoxDecoration(color: Colors.white),
+                  child: FloatingActionButton(
+                    onPressed: () async {
+                      await context.read<PracticeCupid>().toggleRecording();
+                    },
+                    child: Icon(state.onLinstening ? Icons.mic : Icons.mic_none,
+                        size: 36),
+                  ),
+                  // child: ElevatedButton(
+                  //   onPressed: () {
+                  //     context.read<PracticeCupid>().userHasSpoken();
+                  //   },
+                  //   child: const Text('Next'),
+                  // ),
+                )
+              ],
+            ));
+      },
+    );
   }
 }
 
