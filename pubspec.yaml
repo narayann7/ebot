@@ -37,6 +37,7 @@ dependencies:
   flutter_bloc: ^8.0.1
   google_fonts: ^3.0.1
   speech_to_text: ^5.6.0
+  flutter_tts: ^3.5.0
 
 dev_dependencies:
   flutter_test:
