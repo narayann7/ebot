@@ -1,5 +1,6 @@
 import 'package:ebot/view/dashboard.dart';
 import 'package:ebot/view/error.dart';
+import 'package:ebot/view/practice_speaking.dart';
 import 'package:flutter/material.dart';
 
 class CustomRoutes {
@@ -9,6 +10,8 @@ class CustomRoutes {
     switch (routeSettings.name) {
       case Dashborad.routeName:
         return Dashborad.getNavigator();
+      case PracticeSpeaking.routeName:
+        return PracticeSpeaking.getNavigator();
 
       case "/ErrorScreen":
         return MaterialPageRoute(builder: (c) => const ErrorScreen());

@@ -1,4 +1,7 @@
+import 'package:ebot/utility/common_functiond.dart';
 import 'package:flutter/material.dart';
+
+import 'practice_speaking.dart';
 
 class Dashborad extends StatelessWidget {
   const Dashborad({Key? key}) : super(key: key);
@@ -14,10 +17,20 @@ class Dashborad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text("Dashborad"),
-      ),
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          ElevatedButton(
+              onPressed: () {
+                teleport(context, PracticeSpeaking.routeName);
+              },
+              child: const Text("Practice Speaking")),
+          ElevatedButton(onPressed: () {}, child: const Text("Conversation ")),
+        ],
+      )),
     );
   }
 }

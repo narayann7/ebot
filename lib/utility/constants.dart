@@ -16,3 +16,11 @@ enum CONECTION_STATUS {
 enum TtsState { playing, stopped, paused, continued }
 
 const Color black = Color(0xff000000);
+
+const List<String> questions = [
+  "hello world",
+  "how are you",
+  "where are you from",
+  "Would you like some food?",
+  "Would you like some water?"
+];

@@ -1,5 +1,7 @@
-import 'package:ebot/view/dashboard.dart';
+import 'package:ebot/controller/practice_cupid.dart';
+import 'package:ebot/view/practice_speaking.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'utility/coustom_routes.dart';
 
 void main() async {
@@ -12,10 +14,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: Dashborad.routeName,
-      onGenerateRoute: CustomRoutes.generateRoute,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<PracticeCupid>(
+          create: (BuildContext context) => PracticeCupid(),
+        ),
+      ],
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialRoute: PracticeSpeaking.routeName,
+        onGenerateRoute: CustomRoutes.generateRoute,
+      ),
     );
   }
 }
