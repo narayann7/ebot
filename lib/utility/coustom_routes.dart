@@ -1,3 +1,4 @@
+import 'package:ebot/view/conversation_history.dart';
 import 'package:ebot/view/conversations.dart';
 import 'package:ebot/view/dashboard.dart';
 import 'package:ebot/view/error.dart';
@@ -14,8 +15,13 @@ class CustomRoutes {
       case PracticeSpeaking.routeName:
         return PracticeSpeaking.getNavigator();
       case Conversation.routeName:
-        return Conversation
-        .getNavigator();
+        return Conversation.getNavigator();
+      case SingleConversions.routeName:
+        List<dynamic> messages = [];
+        if (args is List<dynamic>) {
+          messages = args;
+        }
+        return SingleConversions.getNavigator(messages);
 
       case "/ErrorScreen":
         return MaterialPageRoute(builder: (c) => const ErrorScreen());

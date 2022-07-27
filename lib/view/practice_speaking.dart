@@ -32,12 +32,6 @@ class _PracticeSpeakingState extends State<PracticeSpeaking> {
     context.read<PracticeCupid>().startPractice();
   }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   context.read<PracticeCupid>().stopPractice();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<PracticeCupid, PraticeState>(
@@ -47,22 +41,57 @@ class _PracticeSpeakingState extends State<PracticeSpeaking> {
           onWillPop: () async {
             context.read<PracticeCupid>().makeItIntial();
 
+            if (state.formattedMessages.length >= 2) {
+              await AppHiveDb.setConversation(state.formattedMessages);
+            }
+
             return true;
           },
           child: Scaffold(
+              backgroundColor: bg2,
               key: _scaffoldKey,
               appBar: AppBar(
-                title: const Text('Practice Speaking'),
-                actions: [
-                  Builder(
-                    builder: (context) => IconButton(
-                      icon: const Icon(Icons.content_copy),
-                      onPressed: () async {
-                        AppHiveDb.setConversation(state.formattedMessages);
-                      },
-                    ),
+                backgroundColor: bg,
+                title: Padding(
+                  padding: const EdgeInsets.only(right: 50),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/bot.png",
+                        height: 30.0,
+                        width: 30.0,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            myText(state.botWillSpeak == true
+                                ? "Speaking"
+                                : state.onLinstening == true
+                                    ? "listening"
+                                    : ""),
+                            state.botWillSpeak == true ||
+                                    state.onLinstening == true
+                                ? Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.asset(
+                                      "assets/loading.gif",
+                                      height: 40.0,
+                                      width: 40.0,
+                                    ),
+                                  )
+                                : Container()
+                          ],
+                        ),
+                      )
+                    ],
                   ),
-                ],
+                ),
+                centerTitle: true,
+                leading: Container(),
               ),
               body: Column(
                 children: [
@@ -76,8 +105,10 @@ class _PracticeSpeakingState extends State<PracticeSpeaking> {
                         itemBuilder: (BuildContext context, int index) {
                           if (state.formattedMessages[index]['isSuggestion'] ==
                               true) {
-                            return suggestions(context,
-                                state.formattedMessages[index]['text']);
+                            return suggestions(
+                                context,
+                                state.formattedMessages[index]['text'],
+                                state.formattedMessages[index]['isMe']);
                           } else {
                             return single_chat(
                                 context,
@@ -89,33 +120,39 @@ class _PracticeSpeakingState extends State<PracticeSpeaking> {
                   Container(
                       height: MediaQuery.of(context).size.height * 0.25,
                       width: MediaQuery.of(context).size.width,
-                      decoration: const BoxDecoration(color: Colors.white),
+                      decoration: const BoxDecoration(color: bg),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child:
-                                myText(state.currentUserTempText, color: black),
+                            padding: const EdgeInsets.only(top: 30),
+                            child: myText(
+                              state.currentUserTempText,
+                            ),
                           ),
                           AvatarGlow(
                             animate: state.onLinstening,
                             showTwoGlows: true,
                             duration: const Duration(milliseconds: 600),
                             endRadius: 75,
-                            glowColor: Theme.of(context).primaryColor,
+                            glowColor: gold,
                             child: FloatingActionButton(
+                              backgroundColor: state.botWillSpeak
+                                  ? const Color.fromARGB(255, 79, 79, 79)
+                                  : gold,
                               onPressed: () async {
-                                await context
-                                    .read<PracticeCupid>()
-                                    .toggleRecording();
+                                if (state.botWillSpeak == false) {
+                                  await context
+                                      .read<PracticeCupid>()
+                                      .toggleRecording();
+                                }
                               },
                               child: Icon(
-                                  state.onLinstening
-                                      ? Icons.mic
-                                      : Icons.mic_none,
-                                  size: 36),
+                                state.onLinstening ? Icons.mic : Icons.mic_none,
+                                size: 36,
+                                color: bg,
+                              ),
                             ),
                           ),
                         ],
@@ -134,6 +171,8 @@ Widget single_chat(
   String message,
 ) {
   return Row(
+    mainAxisAlignment:
+        isMe == true ? MainAxisAlignment.end : MainAxisAlignment.start,
     children: [
       Flexible(
         child: Column(
@@ -145,20 +184,28 @@ Widget single_chat(
               margin: EdgeInsets.only(
                   bottom: 10,
                   left:
-                      isMe == true ? MediaQuery.of(context).size.width / 3 : 10,
+                      isMe == true ? MediaQuery.of(context).size.width / 3 : 20,
                   right:
-                      isMe == true ? 10 : MediaQuery.of(context).size.width / 3,
+                      isMe == true ? 20 : MediaQuery.of(context).size.width / 3,
                   top: 10),
               decoration: BoxDecoration(
-                color: isMe == true
-                    ? const Color(0xffebeff2)
-                    : const Color(0xffebeff2),
-                borderRadius: BorderRadius.circular(8),
-              ),
+                  color:
+                      isMe == true ? const Color.fromARGB(255, 79, 79, 79) : bg,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: isMe == true
+                          ? const Radius.circular(8)
+                          : const Radius.circular(0),
+                      bottomRight: isMe == true
+                          ? const Radius.circular(0)
+                          : const Radius.circular(8),
+                      topLeft: const Radius.circular(8),
+                      topRight: const Radius.circular(8))),
               // width: MediaQuery.of(context).size.width,
               child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: myText(message, color: black)),
+                  padding: const EdgeInsets.all(10.0),
+                  child: myText(
+                    message,
+                  )),
             ),
             isMe == false
                 ? GestureDetector(
@@ -171,12 +218,15 @@ Widget single_chat(
                           bottom: 0,
                           left: isMe == true
                               ? MediaQuery.of(context).size.width / 3
-                              : 10,
-                          right: isMe == true ? 10 : 100,
+                              : 20,
+                          right: isMe == true ? 20 : 100,
                           top: 0),
-                      decoration: BoxDecoration(
-                          color: Colors.amber[100], shape: BoxShape.circle),
-                      child: const Icon(Icons.volume_down),
+                      decoration: const BoxDecoration(
+                          color: bg, shape: BoxShape.circle),
+                      child: const Icon(
+                        Icons.volume_down,
+                        color: Colors.white,
+                      ),
                     ),
                   )
                 : Container()
@@ -190,6 +240,7 @@ Widget single_chat(
 suggestions(
   BuildContext context,
   String message,
+  bool isMe,
 ) {
   return Row(
     children: [
@@ -200,13 +251,20 @@ suggestions(
             Container(
               margin: EdgeInsets.only(
                   bottom: 0,
-                  left: 10,
+                  left: 20,
                   right: MediaQuery.of(context).size.width / 3,
-                  top: 10),
+                  top: 20),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 38, 167, 49),
-                borderRadius: BorderRadius.circular(8),
-              ),
+                  color: const Color.fromARGB(255, 53, 214, 67),
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: isMe == true
+                          ? const Radius.circular(8)
+                          : const Radius.circular(0),
+                      bottomRight: isMe == true
+                          ? const Radius.circular(0)
+                          : const Radius.circular(8),
+                      topLeft: const Radius.circular(8),
+                      topRight: const Radius.circular(8))),
               // width: MediaQuery.of(context).size.width,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

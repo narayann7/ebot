@@ -1,7 +1,35 @@
-import 'dart:developer';
+import 'dart:convert';
+
+import 'package:ebot/utility/common_function.dart';
+import 'package:ebot/utility/constants.dart';
+import 'package:ebot/view/conversation_history.dart';
+import 'package:flutter/material.dart';
 
 import 'package:ebot/controller/hive_db.dart';
-import 'package:flutter/material.dart';
+
+class ConversationData {
+  List<dynamic> formattedMessages;
+  ConversationData({
+    required this.formattedMessages,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'formattedMessages': formattedMessages,
+    };
+  }
+
+  factory ConversationData.fromMap(Map<String, dynamic> map) {
+    return ConversationData(
+      formattedMessages: List<dynamic>.from(map['formattedMessages']),
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory ConversationData.fromJson(String source) =>
+      ConversationData.fromMap(json.decode(source));
+}
 
 class Conversation extends StatefulWidget {
   const Conversation({Key? key}) : super(key: key);
@@ -23,11 +51,6 @@ class _ConversationState extends State<Conversation> {
   List<String> names = [];
   var data;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   Future<bool> openBox() async {
     var temp = await AppHiveDb.getAllConversation();
     data = temp;
@@ -41,15 +64,20 @@ class _ConversationState extends State<Conversation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: bg,
         appBar: AppBar(
+          title: myText("Conversations History"),
+          backgroundColor: bg,
           actions: [
-            Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.content_copy),
-                onPressed: () async {
-                  // log(names.toString());
-                },
-              ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: GestureDetector(
+                  onTap: () async {
+                    names.clear();
+                    setState(() {});
+                    await AppHiveDb.clearAllConversation();
+                  },
+                  child: const Icon(Icons.delete)),
             ),
           ],
         ),
@@ -61,31 +89,25 @@ class _ConversationState extends State<Conversation> {
                 itemCount: names.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding:
+                        const EdgeInsets.only(top: 20, right: 40, left: 40),
                     child: GestureDetector(
                       onTap: () {
-                        log(data[0]["message"].toString());
+                        teleportWithArguments(
+                            context,
+                            SingleConversions.routeName,
+                            data[index]["message"]);
                       },
                       child: Container(
-                        padding: const EdgeInsets.all(18.0),
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 18, horizontal: 10),
                         height: MediaQuery.of(context).size.height * 0.07,
                         width: MediaQuery.of(context).size.width * 0.8,
-                        decoration: BoxDecoration(color: Colors.amber[100]),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(names[index]),
-                            // GestureDetector(
-                            //     onTap: () {
-                            //       setState(() async {
-                            //         names.removeAt(index);
-                            //         await AppHiveDb.clearSingleConversation(
-                            //             index);
-                            //       });
-                            //     },
-                            //     child: const Icon(Icons.delete))
-                          ],
-                        ),
+                        decoration: BoxDecoration(
+                            color: bg2,
+                            borderRadius: BorderRadius.circular(12)),
+                        child: myText(names[index]),
                       ),
                     ),
                   );

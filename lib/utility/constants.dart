@@ -16,6 +16,9 @@ enum CONECTION_STATUS {
 enum TtsState { playing, stopped, paused, continued }
 
 const Color black = Color(0xff000000);
+const Color gold = Color(0xffd8a01f);
+const Color bg = Color(0xff030e21);
+const Color bg2 = Color(0xff1A1A2B);
 
 const List<Map<String, String>> questions = [
   {"bot": "Hello", "user": "Good afternoon"},

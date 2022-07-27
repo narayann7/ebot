@@ -101,9 +101,12 @@ class PracticeCupid extends Cubit<PraticeState> {
     await flutterTts.setVolume(0.5);
     await flutterTts.setSpeechRate(0.4);
     await flutterTts.setPitch(1);
+    emit(state.copyWith(botWillSpeak: true));
+
     if (text.isNotEmpty) {
       await flutterTts.speak(text);
     }
+    emit(state.copyWith(botWillSpeak: false));
   }
 
   Future stopPractice() async {
