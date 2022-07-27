@@ -109,4 +109,8 @@ class PracticeCupid extends Cubit<PraticeState> {
   Future stopPractice() async {
     await flutterTts.stop();
   }
+
+  makeItIntial() {
+    emit(PraticeState.initial());
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:ebot/utility/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 void teleport(BuildContext context, String screen) {
   Navigator.of(context).pushNamed(screen);
@@ -41,4 +42,13 @@ myText(String content,
     style: GoogleFonts.getFont(fontfamily,
         fontSize: size, color: color, fontWeight: fontWeight),
   );
+}
+
+getConversionTitle() async {
+  final DateTime now = DateTime.now();
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String date = formatter.format(now);
+  final time = "${now.hour}:${now.minute}:${now.second}";
+  final heading = "$date ($time)";
+  return heading;
 }

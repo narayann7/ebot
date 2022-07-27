@@ -1,4 +1,5 @@
-import 'package:ebot/utility/common_functiond.dart';
+import 'package:ebot/utility/common_function.dart';
+import 'package:ebot/view/conversations.dart';
 import 'package:flutter/material.dart';
 
 import 'practice_speaking.dart';
@@ -28,7 +29,11 @@ class Dashborad extends StatelessWidget {
                 teleport(context, PracticeSpeaking.routeName);
               },
               child: const Text("Practice Speaking")),
-          ElevatedButton(onPressed: () {}, child: const Text("Conversation ")),
+          ElevatedButton(
+              onPressed: () {
+                teleport(context, Conversation.routeName);
+              },
+              child: const Text("Conversation ")),
         ],
       )),
     );
