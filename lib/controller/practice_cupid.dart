@@ -18,12 +18,19 @@ class PracticeCupid extends Cubit<PraticeState> {
     }
 
     final isAvailable = await _speech.initialize(
-      onStatus: (status) {
+      onStatus: (status) async {
         emit(state.copyWith(onLinstening: _speech.isListening));
-        if (state.onLinstening == false) {
+
+        if (status == "done" && state.currentUserTempText != "say something") {
+          var messages = state.formattedMessages;
+          messages.add({"isMe": true, "text": state.currentUserTempText});
           emit(state.copyWith(
               currentUserText: state.currentUserTempText,
-              currentUserTempText: "say something"));
+              currentUserTempText: "say something",
+              formattedMessages: messages));
+          log(state.formattedMessages.toString());
+
+          await userHasSpoken();
         }
       },
       onError: (e) => log('Error: $e'),
@@ -31,7 +38,9 @@ class PracticeCupid extends Cubit<PraticeState> {
 
     if (isAvailable) {
       _speech.listen(onResult: (value) {
-        emit(state.copyWith(currentUserTempText: value.recognizedWords));
+        if (value.recognizedWords.isNotEmpty) {
+          emit(state.copyWith(currentUserTempText: value.recognizedWords));
+        }
       });
     }
 
@@ -46,6 +55,8 @@ class PracticeCupid extends Cubit<PraticeState> {
       if (engine != null) {
         log(engine);
       }
+      final time = await Future.delayed(const Duration(milliseconds: 600))
+          .then((value) => DateTime.now());
       await botSpeak();
     } catch (e) {}
   }
@@ -53,26 +64,42 @@ class PracticeCupid extends Cubit<PraticeState> {
   botSpeak() async {
     if (state.botWillSpeak) {
       var botText = questions[state.botIndex]['bot'];
+      var messages = state.formattedMessages;
+      messages.add({"isMe": false, "text": botText});
+      emit(state.copyWith(formattedMessages: messages));
       await speak(botText as String);
+
       emit(state.copyWith(
         botIndex: state.botIndex + 1,
         botWillSpeak: false,
+        currentBotText: botText,
       ));
     }
   }
 
   userHasSpoken() async {
+    final time = await Future.delayed(const Duration(seconds: 1))
+        .then((value) => DateTime.now());
+    if (questions[state.botIndex - 1]["user"]!.toLowerCase() !=
+        state.currentUserText) {
+      var messages = state.formattedMessages;
+      messages.add({
+        "isMe": false,
+        "isSuggestion": true,
+        "text": questions[state.botIndex - 1]["user"]
+      });
+    }
     emit(state.copyWith(
         userIndex: state.userIndex + 1,
         showSuggestion: false,
         botWillSpeak: true));
 
-    botSpeak();
+    await botSpeak();
   }
 
   Future speak(String text) async {
     await flutterTts.setVolume(0.5);
-    await flutterTts.setSpeechRate(0.5);
+    await flutterTts.setSpeechRate(0.4);
     await flutterTts.setPitch(1);
     if (text.isNotEmpty) {
       await flutterTts.speak(text);

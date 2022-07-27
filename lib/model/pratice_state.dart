@@ -7,7 +7,7 @@ class PraticeState {
   String currentUserText;
   String currentUserTempText;
   bool onLinstening;
-  List<Map<String, String>> messages;
+  List<dynamic> formattedMessages;
   PraticeState({
     required this.botWillSpeak,
     required this.botIndex,
@@ -17,11 +17,12 @@ class PraticeState {
     required this.currentUserText,
     required this.currentUserTempText,
     required this.onLinstening,
-    required this.messages,
+    required this.formattedMessages,
   });
 
   factory PraticeState.initial() {
     return PraticeState(
+      formattedMessages: [],
       currentUserTempText: "say something",
       onLinstening: false,
       botWillSpeak: true,
@@ -30,7 +31,6 @@ class PraticeState {
       showSuggestion: false,
       currentBotText: '',
       currentUserText: '',
-      messages: [],
     );
   }
 
@@ -43,7 +43,7 @@ class PraticeState {
     String? currentUserText,
     String? currentUserTempText,
     bool? onLinstening,
-    List<Map<String, String>>? messages,
+    List<dynamic>? formattedMessages,
   }) {
     return PraticeState(
       botWillSpeak: botWillSpeak ?? this.botWillSpeak,
@@ -54,7 +54,7 @@ class PraticeState {
       currentUserText: currentUserText ?? this.currentUserText,
       currentUserTempText: currentUserTempText ?? this.currentUserTempText,
       onLinstening: onLinstening ?? this.onLinstening,
-      messages: messages ?? this.messages,
+      formattedMessages: formattedMessages ?? this.formattedMessages,
     );
   }
 }
