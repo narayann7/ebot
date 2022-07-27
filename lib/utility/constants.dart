@@ -26,7 +26,8 @@ const List<Map<String, String>> questions = [
   {"bot": "What would you like?", "user": "I would like a tea"},
   {"bot": "Would you like some food?", "user": "A fish please"},
   {"bot": "Anything else?", "user": "Yes, with grilled vegetables"},
-  {"bot": "Would you like some water?", "user": "Yes, please"}
+  {"bot": "How are you?", "user": "i am good"},
+  {"bot": "How is life?", "user": "life is mixture of happiness and saddness"},
 ];
 
 

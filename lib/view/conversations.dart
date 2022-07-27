@@ -76,6 +76,9 @@ class _ConversationState extends State<Conversation> {
                     names.clear();
                     setState(() {});
                     await AppHiveDb.clearAllConversation();
+                    names.clear();
+                    setState(() {});
+                    await AppHiveDb.clearAllConversation();
                   },
                   child: const Icon(Icons.delete)),
             ),
